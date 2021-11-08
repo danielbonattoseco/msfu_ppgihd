@@ -108,7 +108,7 @@ while True:
                         media_ocupacao_vizinhos = ((CA_matriz_0[j-1][i] if ((j-1 in range(0,CA_X)) and (i in range(0,CA_X))) else 0) +
                                                    (CA_matriz_0[j][i-1] if ((j in range(0,CA_X)) and (i-1 in range(0,CA_X))) else 0) +
                                                    (CA_matriz_0[j][i+1] if ((j in range(0,CA_X)) and (i+1 in range(0,CA_X))) else 0) +
-                                                   (CA_matriz_0[j+1][i] if ((j+1 in range(0,CA_X)) and (i in range(0,CA_X))) else 0)) / 8
+                                                   (CA_matriz_0[j+1][i] if ((j+1 in range(0,CA_X)) and (i in range(0,CA_X))) else 0)) / 4
                         
                     
                     # score_final = (valor_media_atributos + media_ocupacao_vizinhos + random.random()) / 3
