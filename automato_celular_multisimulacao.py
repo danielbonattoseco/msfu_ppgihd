@@ -124,7 +124,7 @@ while True:
         break
 
 #%%
-colors = ['royalblue','indianred','orange','mediumseagreen','teal']   
+colors = ['royalblue','indianred','orange','mediumseagreen','mediumvioletred','darkgrey','darkviolet', 'teal','slategray','burlywood']   
  
 fig = plt.figure(figsize=(10,5))
 colors_pos = 0
