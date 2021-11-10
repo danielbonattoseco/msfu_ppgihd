@@ -8,6 +8,8 @@ Created on Fri Nov  5 23:30:08 2021
 import random
 import numpy
 import matplotlib.pyplot as plt
+import os
+from datetime import datetime
 
 def condicao_inicial(CA_Y, CA_X, pct_ocupacao_inicial):
     CA_matriz_0 =  numpy.zeros((CA_Y, CA_X))
@@ -58,17 +60,23 @@ pct_ocupacao_inicial = int(input('Digite a porcentagem inicial de ocupação da 
 qtd_iteracoes = int(input('Digite a quantidade de iterações:\n'))
 tipo_vizinhança = int(input('Defina o tipo de vizinhança:\n0 = Moore (8 vizinhos)\n1 = von Neumann (4 vizinhos)\n'))
 
+nome_pasta = datetime.now().strftime("%Y%m%d_%H%M%S")
+os.mkdir("./"+nome_pasta)
+
+id_simulacao = 0
+
+#%%
+
 while True:
+    
+    id_simulacao = id_simulacao + 1
+    
     epsilon = float(input('Defina ε (entre 0 e 1):\n'))
-    
-    #%%
-    
+        
     lista_atributos = matriz_atributos(CA_Y, CA_X)
     CA_matriz_0, CA_matriz_1 = condicao_inicial(CA_Y, CA_X, pct_ocupacao_inicial)
     ocupacao_stats = {}
-    
-    #%%
-    
+    os.mkdir("./"+nome_pasta+"/Simulacao"+str(id_simulacao))
     
     for iteracao in range(0,qtd_iteracoes):
         
@@ -85,7 +93,9 @@ while True:
                                                                                                                 pct_ocupacao_inicial,
                                                                                                                 epsilon,
                                                                                                                 ('Moore' if tipo_vizinhança == 0 else 'von Neumann')))
-        plt.show()   
+         
+        plt.savefig("./"+nome_pasta+"/Simulacao"+str(id_simulacao)+"/"+str(iteracao+1)+'.jpeg', dpi=72, bbox_inches='tight')
+        plt.show()
         
         for j in range(0, CA_Y):
             for i in range(0, CA_X):
@@ -120,17 +130,18 @@ while True:
         CA_matriz_0 = CA_matriz_1
         
     lista_ocupacao_stats.append((epsilon,ocupacao_stats))
+    
     if input('Deseja realizar outra simulação nesta mesma execução?\n') not in ['s','S','y','Y']:
         break
 
 #%%
-colors = ['royalblue','indianred','orange','mediumseagreen','mediumvioletred','darkgrey','darkviolet', 'teal','slategray','burlywood']   
+colors = ['royalblue','indianred','orange','mediumseagreen','teal']   
  
 fig = plt.figure(figsize=(10,5))
 colors_pos = 0
 for ocupacao_stats in lista_ocupacao_stats:
     plt.plot(list(ocupacao_stats[1].keys()), 
-            list(ocupacao_stats[1].values()), 
+            [i*100 for i in list(ocupacao_stats[1].values())], 
             linestyle='--',
             marker='x',
             color = colors[colors_pos],
@@ -138,17 +149,38 @@ for ocupacao_stats in lista_ocupacao_stats:
     colors_pos += 1     
           
 x1,x2,y1,y2 = plt.axis()  
-plt.axis((x1,x2,0,1))  
+plt.axis((x1,x2,0,100))  
 plt.xlabel("Iteração") 
-plt.ylabel("Células Ocupadas") 
+plt.ylabel("Células Ocupadas (%)") 
 plt.title("Evolução do AC\nIterações: {}\nMalha: {} x {}\nOcupação Inicial: {}%\nTipo de Vizinhança: {}".format(qtd_iteracoes,
                                                                                                                 CA_X,
                                                                                                                 CA_Y,
                                                                                                                 pct_ocupacao_inicial,
                                                                                                                 ('Moore' if tipo_vizinhança == 0 else 'von Neumann')))
 plt.legend(loc='best')
+plt.savefig("./"+nome_pasta+"/plot_ocupacao.jpeg", dpi=300, bbox_inches='tight')
 plt.show() 
 
+with open('./'+nome_pasta+'/configs.txt', 'w') as f:
+    f.write('Data da simulação: ' +
+            datetime.now().strftime("%d/%m/%Y %H:%M:%S") +
+            '\n\nTamanho da Malha: ' +
+            str(CA_X) +
+            ' x ' +
+            str(CA_Y) +
+            '\nPorcentagem de ocupação inicial: ' + 
+            str(pct_ocupacao_inicial) + 
+            '%\nQuantidade de iterações: ' +
+            str(qtd_iteracoes) + 
+            '\nTipo de vizinhança: ' +
+            ('Moore' if tipo_vizinhança == 0 else 'von Neumann') +
+            '\n\nQuantidade de simulações realizadas: ' +
+            str(id_simulacao) +
+            '\nValores de epsilon utilizados: ' +
+            ', '.join(str(ocupacao_stats[0]) for ocupacao_stats in lista_ocupacao_stats)
+            )
+    f.close()
+    
 #%%
 
 #curva de ocupação = 100, 2, 300, 0.15 (fig 10,5)
